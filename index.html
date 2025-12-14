@@ -29,10 +29,15 @@
     /* area crop */
     #cropArea{display:none;text-align:center;margin:12px 0}
     #cropImg{max-width:100%;max-height:60vh}
+    /* log debug */
+    #log{position:fixed;top:4px;left:4px;right:4px;background:#000a;color:#0f0;font:10px/1.2 mono;max-height:70px;overflow:auto;z-index:9999}
   </style>
 </head>
 
 <body>
+<!-- DEBUG LOG -->
+<div id="log"></div>
+
 <header>
   <h1>🗞 Crea il tuo giornalino</h1>
   <button id="btnExport">Esporta & invia su WhatsApp</button>

@@ -1,37 +1,91 @@
-:root{
-  --w:1080px;
-  --h:1080px;
-  --gap:12px;
+:root {
+  --w: 1080px;
+  --h: 1080px;
+  --gap: 12px;
   font-family: system-ui, sans-serif;
 }
-body{margin:0;background:#111;color:#fff}
-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px}
-button{padding:10px 20px;background:#25d366;color:#fff;border:none;border-radius:4px;cursor:pointer}
 
-.canvas{
-  width:var(--w);
-  height:var(--h);
-  margin:20px auto;
-  background:#fff;
-  color:#000;
-  position:relative;
-  box-shadow:0 0 20px rgba(0,0,0,.5);
-  overflow:hidden;
+body {
+  margin: 0;
+  background: #111;
+  color: #fff;
 }
-.grid{padding:var(--gap);display:flex;flex-direction:column;gap:var(--gap);height:100%}
 
-.blocco{border:2px dashed transparent;transition:border .2s;position:relative}
-.blocco:hover{border-color:#25d366}
-.titolo{font-size:48px;font-weight:700;text-align:center}
-.testo{font-size:24px}
-.immagine{width:100%;object-fit:cover;border-radius:6px}
-/* input file sopra il bottone */
-.file-btn{
-  position:absolute;
-  top:0;left:0;width:100%;height:100%;
-  opacity:0;          /* trasparente */
-  font-size:0;
-  cursor:pointer;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
 }
-/* contenitore per il trick */
-.btn-wrap{position:relative;display:inline-block;margin:12px 0}
+
+button {
+  padding: 10px 20px;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.canvas {
+  width: var(--w);
+  height: var(--h);
+  margin: 20px auto;
+  background: #fff;
+  color: #000;
+  position: relative;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.grid {
+  padding: var(--gap);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  height: 100%;
+}
+
+.blocco {
+  border: 2px dashed transparent;
+  transition: border 0.2s;
+  position: relative;
+}
+
+.blocco:hover {
+  border-color: #25d366;
+}
+
+.titolo {
+  font-size: 48px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.testo {
+  font-size: 24px;
+}
+
+.immagine {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* trick: input trasparente sopra il bottone */
+.file-btn {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  font-size: 0;
+  cursor: pointer;
+}
+
+.btn-wrap {
+  position: relative;
+  display: inline-block;
+  margin: 12px 0;
+}
