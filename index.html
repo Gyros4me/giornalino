@@ -4,26 +4,54 @@
   <meta charset="utf-8">
   <title>Giornalino WhatsApp</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- PWA base -->
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#25d366">
+
+  <!-- Apple / iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Giornalino">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="icons/192.png">
+
   <link rel="stylesheet" href="css/style.css">
   <script src="js/html2canvas.min.js"></script>
+  <style>
+    /* mini-banner iOS */
+    .ios-banner{position:fixed;bottom:0;left:0;right:0;background:#25d366;color:#fff;text-align:center;padding:12px;font-size:15px;z-index:999}
+    .ios-banner button{margin-left:12px;padding:4px 12px;border:none;border-radius:4px;background:#fff;color:#25d366;font-weight:600}
+  </style>
 </head>
+
 <body>
 <header>
   <h1>🗞 Crea il tuo giornalino</h1>
   <button id="btnExport">Esporta & invia su WhatsApp</button>
 </header>
 
-<!-- AREA EDITOR -->
 <main id="editor" class="canvas">
   <div class="grid">
-    <!-- Template iniziale (può essere vuoto) -->
     <div class="blocco titolo" contenteditable="true">Titolo del giornalino</div>
-    <div class="blocco testo"  contenteditable="true">Scrivi qui la notizia...</div>
+    <div class="blocco testo"  contenteditable="true">Scrivi qui la notizia…</div>
     <img class="blocco immagine" src="https://via.placeholder.com/600x300" alt="Foto">
   </div>
 </main>
 
+<!-- istruzioni iOS -->
+<div id="iosHelp" class="ios-banner" style="display:none">
+  Per installare: Safari → Condividi → Aggiungi a Home
+  <button onclick="this.parentElement.style.display='none'">OK</button>
+</div>
+
 <script src="js/app.js"></script>
+<script>
+// mostra banner solo su iOS non-installato
+if(/iPad|iPhone|iPod/.test(navigator.userAgent) &&
+   !window.matchMedia('(display-mode: standalone)').matches){
+  document.getElementById('iosHelp').style.display='block';
+}
+</script>
 </body>
 </html>
