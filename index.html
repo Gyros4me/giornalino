@@ -16,6 +16,10 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
   <link rel="apple-touch-icon" sizes="192x192" href="icons/192.png">
 
+  <!-- Cropper.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.css" integrity="sha512-adaa0xQQfpoHmHzaCxuXjD6xUb0bOSVl5mYkCgrdLDQ4xGDfG8wH6Cd6j0cA0LK8eAZY5kG4uzlwdwK5g5l5g5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.js" integrity="sha512-adaa0xQQfpoHmHzaCxuXjD6xUb0bOSVl5mYkCgrdLDQ4xGDfG8wH6Cd6j0cA0LK8eAZY5kG4uzlwdwK5g5l5g5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
   <link rel="stylesheet" href="css/style.css">
   <script src="js/html2canvas.min.js"></script>
   <style>
@@ -24,6 +28,9 @@
     .ios-banner button{margin-left:12px;padding:4px 12px;border:none;border-radius:4px;background:#fff;color:#25d366;font-weight:600}
     /* input file carina */
     #imgInput{display:block;margin:12px auto;font-size:16px}
+    /* area crop */
+    #cropArea{display:none;text-align:center;margin:12px 0}
+    #cropImg{max-width:100%;max-height:60vh}
   </style>
 </head>
 
@@ -35,6 +42,15 @@
 
 <!-- CARICA IMMAGINE -->
 <input type="file" id="imgInput" accept="image/*">
+<button type="button" id="btnDelImg" style="margin-left:8px;padding:6px 12px">🗑 Rimuovi</button>
+
+<!-- AREA CROP (nascosta) -->
+<div id="cropArea">
+  <img id="cropImg" src="" alt="">
+  <br>
+  <button id="btnCropOK" type="button">✅ OK</button>
+  <button id="btnCropCancel" type="button">❌ Annulla</button>
+</div>
 
 <main id="editor" class="canvas">
   <div class="grid">
