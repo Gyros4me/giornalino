@@ -54,35 +54,34 @@ function openCropBlob(blob) {
 
   // aspettiamo onload prima di costruire cropper
   cropImg.onload = () => {
-    log('CropImg onload – costruisco cropper');
+    log('CropImg onload – attendo render');
     document.getElementById('cropArea').style.display = 'block';
-    if (cropper) cropper.destroy();
-    cropper = new Cropper(cropImg, {
-      aspectRatio: NaN,
-      viewMode: 1,
-      autoCropArea: 0.5,
-      movable: true,
-      zoomable: true,
-      scalable: true,
-      ready()     { log('Cropper ready');   document.getElementById('cropHint').textContent='👉 Tocca e sposta il riquadro bianco';   enableOK(true); },
-      cropmove()  { enableOK(); },
-      cropend()   { enableOK(); }
-    });
-    // forziamo rettangolo visibile
-    cropper.setCropBoxData({ left: 50, top: 50, width: 300, height: 200 });
 
-    // overlay touch – cattura gesture iOS
-    const touch = document.getElementById('cropTouch');
-    touch.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-    touch.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
-    touch.addEventListener('touchend',   e => e.stopPropagation(), { passive: true });
-
-    // se dopo 3 secondi non si muove, mostriamo hint
+    // piccolo timeout per sicurezza render
     setTimeout(() => {
-      if (cropper && !cropper.getCroppedCanvas()) {
-        document.getElementById('cropHint').textContent = '👉 Tocca e sposta il riquadro bianco';
-      }
-    }, 3000);
+      log('Costruisco cropper');
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropImg, {
+        aspectRatio: NaN,
+        viewMode: 1,
+        autoCropArea: 0.5,
+        movable: true,
+        zoomable: true,
+        scalable: true,
+        ready()     { log('Cropper ready');   document.getElementById('cropHint').textContent='👉 Tocca e sposta il riquadro bianco';   enableOK(true); },
+        cropmove()  { enableOK(); },
+        cropend()   { enableOK(); }
+      });
+      // forziamo rettangolo visibile
+      cropper.setCropBoxData({ left: 50, top: 50, width: 300, height: 200 });
+
+      // overlay touch – cattura gesture iOS
+      const touch = document.getElementById('cropTouch');
+      touch.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
+      touch.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
+      touch.addEventListener('touchend',   e => e.stopPropagation(), { passive: true });
+
+    }, 100); // 100 ms bastano
 
     // se dopo 5 secondi non è pronto, offriamo via d’uscita
     setTimeout(() => {
