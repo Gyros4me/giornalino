@@ -27,8 +27,8 @@
     .ios-banner{position:fixed;bottom:0;left:0;right:0;background:#25d366;color:#fff;text-align:center;padding:12px;font-size:15px;z-index:999}
     .ios-banner button{margin-left:12px;padding:4px 12px;border:none;border-radius:4px;background:#fff;color:#25d366;font-weight:600}
     /* area crop */
-    #cropArea{display:none;text-align:center;margin:12px 0}
-    #cropImg{max-width:100%;max-height:60vh}
+    #cropArea{display:none;text-align:center;margin:12px 0;min-height:220px;background:#f5f5f5}
+    #cropImg{max-width:100%;max-height:50vh;display:block;margin:0 auto}
     /* log debug */
     #log{position:fixed;top:4px;left:4px;right:4px;background:#000a;color:#0f0;font:10px/1.2 mono;max-height:70px;overflow:auto;z-index:9999}
   </style>
@@ -52,9 +52,10 @@
 
 <!-- AREA CROP -->
 <div id="cropArea">
+  <div id="cropStatus" style="margin-bottom:8px;font-size:14px;color:#555">Caricamento cropper...</div>
   <img id="cropImg" src="" alt="">
   <br>
-  <button id="btnCropOK" type="button">✅ OK</button>
+  <button id="btnCropOK" type="button" disabled>✅ OK</button>
   <button id="btnCropCancel" type="button">❌ Annulla</button>
 </div>
 
