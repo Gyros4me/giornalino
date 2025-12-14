@@ -1,5 +1,5 @@
+// Log visivo
 const log  = (...a) => console.log(...a) || document.getElementById('log').appendChild(document.createTextNode(a.join(' ')+'\n'));
-const stat = (...a) => document.getElementById('cropStatus').textContent = a.join(' ');
 
 log('JS caricato');
 
@@ -7,14 +7,14 @@ log('JS caricato');
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
 let cropper = null;
-let cropURL = null;                      // serve per pulire
+let cropURL  = null; // per pulire
 
-// 1) CHANGE → limitiamo dimensione e forziamo crop
+// 1) CHANGE → limitiamo peso e apriamo crop
 document.getElementById('imgInput').addEventListener('change', e => {
   log('CHANGE');
   const file = e.target.files?.[0];
-  if (!file) { log('Nessun file'); stat('Nessuna immagine'); return; }
-  if (!file.type.startsWith('image/')) { log('Non immagine'); stat('File non valido'); return; }
+  if (!file) { log('Nessun file'); return; }
+  if (!file.type.startsWith('image/')) { log('Non immagine'); return; }
 
   // leggiamo l'immagine e la RIDUCIAMO se troppo grande
   const img = new Image();
@@ -22,7 +22,6 @@ document.getElementById('imgInput').addEventListener('change', e => {
   img.src = url;
   img.onload = () => {
     log('Image onload', img.width, img.height);
-    // se l'immagine è gigante, la riduciamo via canvas
     const max = 1200; // lato massimo
     let w = img.width, h = img.height;
     if (w > max || h > max) {
@@ -44,7 +43,6 @@ document.getElementById('imgInput').addEventListener('change', e => {
   };
   img.onerror = () => {
     log('ERRORE caricamento img');
-    stat('Immagine non leggibile');
     URL.revokeObjectURL(url);
   };
 });
@@ -59,16 +57,16 @@ function openCropBlob(blob) {
     aspectRatio: NaN,
     viewMode: 1,
     autoCropArea: 0.8,
-    ready()     { log('Cropper PRONTO');   stat('Ritaglia l’immagine');   enableOK(true); },
-    cropstart() { log('Crop start'); },
-    cropend()   { log('Crop end');         enableOK(); }
+    ready()     { log('Cropper PRONTO');   document.getElementById('cropHint').textContent='👉 Sposta o ingrandisci il riquadro bianco';   enableOK(true); },
+    cropmove()  { enableOK(); },
+    cropend()   { enableOK(); }
   });
 
   // se dopo 4 secondi non è pronto, forziamo comunque
   setTimeout(() => {
     if (cropper && !cropper.ready) {
       log('Forzo cropper (timeout)');
-      stat('Ritaglia l’immagine');
+      document.getElementById('cropHint').textContent='👉 Sposta o ingrandisci il riquadro bianco';
       enableOK(true);
     }
   }, 4000);
@@ -78,7 +76,6 @@ function openCropBlob(blob) {
 function enableOK(force = false) {
   const canCrop = force || (cropper && cropper.getCroppedCanvas());
   document.getElementById('btnCropOK').disabled = !canCrop;
-  stat(canCrop ? '' : 'Sposta o ridimensiona il riquadro');
 }
 
 // 5) CONFERMA – solo se abilitato
@@ -95,8 +92,7 @@ document.getElementById('btnCropOK').addEventListener('click', () => {
     document.getElementById('cropArea').style.display = 'none';
     cropper.destroy(); cropper = null;
     URL.revokeObjectURL(cropURL);
-    stat('Immagine aggiornata!');
-    enableOK(false);
+    log('Crop finito');
   }, 'image/jpeg', 0.92);
 });
 
@@ -105,12 +101,10 @@ document.getElementById('btnCropCancel').addEventListener('click', () => {
   document.getElementById('cropArea').style.display = 'none';
   if (cropper) { cropper.destroy(); cropper = null; }
   URL.revokeObjectURL(cropURL);
-  stat('');
   enableOK(false);
 });
 
 document.getElementById('btnDelImg').addEventListener('click', () => {
   document.querySelector('.immagine').src = 'img/default.jpg';
   document.getElementById('imgInput').value = '';
-  stat('Immagine rimossa');
 });
