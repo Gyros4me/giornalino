@@ -9,46 +9,17 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 let cropper = null;
 let cropURL  = null; // per pulire
 
-// 1) CHANGE → limitiamo peso e apriamo crop
+// 1) CHANGE → apriamo crop
 document.getElementById('imgInput').addEventListener('change', e => {
   log('CHANGE');
   const file = e.target.files?.[0];
   if (!file) { log('Nessun file'); return; }
   if (!file.type.startsWith('image/')) { log('Non immagine'); return; }
-
-  // leggiamo l'immagine e la RIDUCIAMO se troppo grande
-  const img = new Image();
-  const url = URL.createObjectURL(file);
-  img.src = url;
-  img.onload = () => {
-    log('Image onload', img.width, img.height);
-    const max = 1200; // lato massimo
-    let w = img.width, h = img.height;
-    if (w > max || h > max) {
-      const ratio = Math.min(max / w, max / h);
-      w = Math.round(w * ratio);
-      h = Math.round(h * ratio);
-      log('Ridimensiono a', w, h);
-      const canvas = document.createElement('canvas');
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      canvas.toBlob(blob => {
-        URL.revokeObjectURL(url);
-        openCropBlob(blob);
-      }, 'image/jpeg', 0.92);
-    } else {
-      openCropBlob(file);
-    }
-  };
-  img.onerror = () => {
-    log('ERRORE onload img');
-    URL.revokeObjectURL(url);
-  };
+  openCropFile(file);
 });
 
-function openCropBlob(blob) {
-  cropURL = URL.createObjectURL(blob);
+function openCropFile(file) {
+  cropURL = URL.createObjectURL(file);
   const cropImg = document.getElementById('cropImg');
   cropImg.src = cropURL;
 
@@ -68,29 +39,23 @@ function openCropBlob(blob) {
         movable: true,
         zoomable: true,
         scalable: true,
-        ready()     { log('Cropper ready');   document.getElementById('cropHint').textContent='👉 Tocca e sposta il riquadro bianco';   enableOK(true); },
+        ready()     { log('Cropper ready');   enableOK(true); },
         cropmove()  { enableOK(); },
         cropend()   { enableOK(); }
       });
       // forziamo rettangolo visibile
       cropper.setCropBoxData({ left: 50, top: 50, width: 300, height: 200 });
 
-      // overlay touch – cattura gesture iOS
-      const touch = document.getElementById('cropTouch');
-      touch.addEventListener('touchstart', e => e.stopPropagation(), { passive: true });
-      touch.addEventListener('touchmove',  e => e.stopPropagation(), { passive: true });
-      touch.addEventListener('touchend',   e => e.stopPropagation(), { passive: true });
-
     }, 100); // 100 ms bastano
 
-    // se dopo 5 secondi non è pronto, offriamo via d’uscita
+    // se dopo 4 secondi non è pronto, offriamo via d’uscita
     setTimeout(() => {
       if (!cropper || !cropper.getCroppedCanvas()) {
         log('Cropper non partito – offro via d’uscita');
         document.getElementById('cropHint').textContent='👉 Tocca "Salva senza ritaglio"';
         document.getElementById('btnSkipCrop').style.display='inline-block';
       }
-    }, 5000);
+    }, 4000);
   };
 
   cropImg.onerror = () => {
@@ -99,13 +64,13 @@ function openCropBlob(blob) {
   };
 }
 
-// 4) ABILITA / DISABILITA OK
+// 2) ABILITA / DISABILITA OK
 function enableOK(force = false) {
   const canCrop = force || (cropper && cropper.getCroppedCanvas());
   document.getElementById('btnCropOK').disabled = !canCrop;
 }
 
-// 5) CONFERMA – solo se abilitato
+// 3) CONFERMA – solo se abilitato
 document.getElementById('btnCropOK').addEventListener('click', () => {
   log('CLICK OK');
   if (!cropper) { log('ERRORE: cropper null'); return; }
@@ -123,7 +88,7 @@ document.getElementById('btnCropOK').addEventListener('click', () => {
   }, 'image/jpeg', 0.92);
 });
 
-// 6) SALVA SENZA RITAGLIO (via d’uscita iOS)
+// 4) SALVA SENZA RITAGLIO (via d’uscita iOS)
 document.getElementById('btnSkipCrop').addEventListener('click', () => {
   log('Skip crop – uso img intera');
   document.querySelector('.immagine').src = cropURL;
@@ -133,16 +98,17 @@ document.getElementById('btnSkipCrop').addEventListener('click', () => {
   log('Immagine salvata intera');
 });
 
-// 7) ANNULLA / RIMUOVI
+// 5) ANNULLA / RIMUOVI
 document.getElementById('btnCropCancel').addEventListener('click', () => {
+  log('CLICK Annulla');
   document.getElementById('cropArea').style.display = 'none';
   if (cropper) { cropper.destroy(); cropper = null; }
   URL.revokeObjectURL(cropURL);
   document.getElementById('btnSkipCrop').style.display='none';
-  enableOK(false);
 });
 
 document.getElementById('btnDelImg').addEventListener('click', () => {
+  log('CLICK Rimuovi');
   document.querySelector('.immagine').src = 'img/default.jpg';
   document.getElementById('imgInput').value = '';
 });
