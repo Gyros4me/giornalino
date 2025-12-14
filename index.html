@@ -22,6 +22,8 @@
     /* mini-banner iOS */
     .ios-banner{position:fixed;bottom:0;left:0;right:0;background:#25d366;color:#fff;text-align:center;padding:12px;font-size:15px;z-index:999}
     .ios-banner button{margin-left:12px;padding:4px 12px;border:none;border-radius:4px;background:#fff;color:#25d366;font-weight:600}
+    /* input file carina */
+    #imgInput{display:block;margin:12px auto;font-size:16px}
   </style>
 </head>
 
@@ -31,11 +33,14 @@
   <button id="btnExport">Esporta & invia su WhatsApp</button>
 </header>
 
+<!-- CARICA IMMAGINE -->
+<input type="file" id="imgInput" accept="image/*">
+
 <main id="editor" class="canvas">
   <div class="grid">
     <div class="blocco titolo" contenteditable="true">Titolo del giornalino</div>
     <div class="blocco testo"  contenteditable="true">Scrivi qui la notizia…</div>
-    <img class="blocco immagine" src="https://via.placeholder.com/600x300" alt="Foto">
+    <img class="blocco immagine" src="img/default.jpg" alt="Foto">
   </div>
 </main>
 
