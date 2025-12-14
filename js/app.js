@@ -20,39 +20,46 @@ document.getElementById('imgInput').addEventListener('change', e=>{
   }
 });
 
-// 3) CONFERMA CROP
-document.getElementById('btnCropOK').addEventListener('click', ()=>{
-  if(!cropper) return;
-  const canvas = cropper.getCroppedCanvas();
-  const targetImg = document.querySelector('.immagine');
-  targetImg.src = canvas.toDataURL('image/jpeg', 0.9);
-  document.getElementById('cropArea').style.display = 'none';
-  cropper.destroy(); cropper = null;
-  URL.revokeObjectURL(document.getElementById('cropImg').src); // pulisci
+// 3) CONFERMA CROP  →  Blob → objectURL
+document.getElementById('btnCropOK').addEventListener('click', () => {
+  if (!cropper) return;
+  const btn = document.getElementById('btnCropOK');
+  btn.disabled = true; // anti-doppio-click
+  const canvas = cropper.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096 });
+  if (!canvas) { btn.disabled = false; return; }
+  canvas.toBlob(blob => {
+    if (!blob) { btn.disabled = false; return; }
+    const url = URL.createObjectURL(blob);
+    document.querySelector('.immagine').src = url;
+    document.getElementById('cropArea').style.display = 'none';
+    cropper.destroy(); cropper = null;
+    URL.revokeObjectURL(document.getElementById('cropImg').src);
+    btn.disabled = false;
+  }, 'image/jpeg', 0.92);
 });
 
 // 4) ANNULLA CROP
-document.getElementById('btnCropCancel').addEventListener('click', ()=>{
+document.getElementById('btnCropCancel').addEventListener('click', () => {
   document.getElementById('cropArea').style.display = 'none';
-  if(cropper){ cropper.destroy(); cropper = null; }
+  if (cropper) { cropper.destroy(); cropper = null; }
   URL.revokeObjectURL(document.getElementById('cropImg').src);
 });
 
 // 5) RIMUOVI IMMAGINE (ripristina default)
-document.getElementById('btnDelImg').addEventListener('click', ()=>{
+document.getElementById('btnDelImg').addEventListener('click', () => {
   document.querySelector('.immagine').src = 'img/default.jpg';
   document.getElementById('imgInput').value = '';
 });
 
 // 6) ESPORTA & INVIA
-document.getElementById('btnExport').addEventListener('click', async()=>{
+document.getElementById('btnExport').addEventListener('click', async() => {
   btnExport.disabled = true;
   const canvas = await html2canvas(document.getElementById('editor'), {scale: 2});
-  canvas.toBlob(blob=>{
-    const file = new File([blob], "giornalino.png", {type:"image/png"});
-    if(navigator.canShare && navigator.canShare({files:[file]})){
-      navigator.share({title:"Giornalino", text:"Ecco il nuovo numero!", files:[file]});
-    }else{
+  canvas.toBlob(blob => {
+    const file = new File([blob], "giornalino.png", {type: "image/png"});
+    if (navigator.canShare && navigator.canShare({files: [file]})) {
+      navigator.share({title: "Giornalino", text: "Ecco il nuovo numero!", files: [file]});
+    } else {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url; a.download = "giornalino.png"; a.click();
