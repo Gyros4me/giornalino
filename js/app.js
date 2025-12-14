@@ -1,28 +1,58 @@
-// Log visivo
 const log  = (...a) => console.log(...a) || document.getElementById('log').appendChild(document.createTextNode(a.join(' ')+'\n'));
 const stat = (...a) => document.getElementById('cropStatus').textContent = a.join(' ');
 
 log('JS caricato');
 
 // Service Worker
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').then(() => log('SW ok')).catch(e => log('SW err', e.message));
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 
 let cropper = null;
+let cropURL = null;                      // serve per pulire
 
-// 1) CHANGE → mostriamo cropper
+// 1) CHANGE → limitiamo dimensione e forziamo crop
 document.getElementById('imgInput').addEventListener('change', e => {
   log('CHANGE');
   const file = e.target.files?.[0];
   if (!file) { log('Nessun file'); stat('Nessuna immagine'); return; }
   if (!file.type.startsWith('image/')) { log('Non immagine'); stat('File non valido'); return; }
-  stat('Caricamento cropper...');
-  openCrop(file);
+
+  // leggiamo l'immagine e la RIDUCIAMO se troppo grande
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.src = url;
+  img.onload = () => {
+    log('Image onload', img.width, img.height);
+    // se l'immagine è gigante, la riduciamo via canvas
+    const max = 1200; // lato massimo
+    let w = img.width, h = img.height;
+    if (w > max || h > max) {
+      const ratio = Math.min(max / w, max / h);
+      w = Math.round(w * ratio);
+      h = Math.round(h * ratio);
+      log('Ridimensiono a', w, h);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => {
+        URL.revokeObjectURL(url);
+        openCropBlob(blob);
+      }, 'image/jpeg', 0.92);
+    } else {
+      openCropBlob(file);
+    }
+  };
+  img.onerror = () => {
+    log('ERRORE caricamento img');
+    stat('Immagine non leggibile');
+    URL.revokeObjectURL(url);
+  };
 });
 
-function openCrop(file) {
-  const url = URL.createObjectURL(file);
+function openCropBlob(blob) {
+  cropURL = URL.createObjectURL(blob);
   const cropImg = document.getElementById('cropImg');
-  cropImg.src = url;
+  cropImg.src = cropURL;
   document.getElementById('cropArea').style.display = 'block';
   if (cropper) cropper.destroy();
   cropper = new Cropper(cropImg, {
@@ -33,16 +63,25 @@ function openCrop(file) {
     cropstart() { log('Crop start'); },
     cropend()   { log('Crop end');         enableOK(); }
   });
+
+  // se dopo 4 secondi non è pronto, forziamo comunque
+  setTimeout(() => {
+    if (cropper && !cropper.ready) {
+      log('Forzo cropper (timeout)');
+      stat('Ritaglia l’immagine');
+      enableOK(true);
+    }
+  }, 4000);
 }
 
-// 2) ABILITA / DISABILITA OK
+// 4) ABILITA / DISABILITA OK
 function enableOK(force = false) {
   const canCrop = force || (cropper && cropper.getCroppedCanvas());
   document.getElementById('btnCropOK').disabled = !canCrop;
   stat(canCrop ? '' : 'Sposta o ridimensiona il riquadro');
 }
 
-// 3) CONFERMA – solo se abilitato
+// 5) CONFERMA – solo se abilitato
 document.getElementById('btnCropOK').addEventListener('click', () => {
   log('CLICK OK');
   if (!cropper) { log('ERRORE: cropper null'); return; }
@@ -55,17 +94,17 @@ document.getElementById('btnCropOK').addEventListener('click', () => {
     document.querySelector('.immagine').src = url;
     document.getElementById('cropArea').style.display = 'none';
     cropper.destroy(); cropper = null;
-    URL.revokeObjectURL(document.getElementById('cropImg').src);
+    URL.revokeObjectURL(cropURL);
     stat('Immagine aggiornata!');
     enableOK(false);
   }, 'image/jpeg', 0.92);
 });
 
-// 4) ANNULLA / RIMUOVI
+// 6) ANNULLA / RIMUOVI
 document.getElementById('btnCropCancel').addEventListener('click', () => {
   document.getElementById('cropArea').style.display = 'none';
   if (cropper) { cropper.destroy(); cropper = null; }
-  URL.revokeObjectURL(document.getElementById('cropImg').src);
+  URL.revokeObjectURL(cropURL);
   stat('');
   enableOK(false);
 });
