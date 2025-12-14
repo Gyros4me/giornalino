@@ -25,3 +25,13 @@ button{padding:10px 20px;background:#25d366;color:#fff;border:none;border-radius
 .titolo{font-size:48px;font-weight:700;text-align:center}
 .testo{font-size:24px}
 .immagine{width:100%;object-fit:cover;border-radius:6px}
+/* input file sopra il bottone */
+.file-btn{
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;
+  opacity:0;          /* trasparente */
+  font-size:0;
+  cursor:pointer;
+}
+/* contenitore per il trick */
+.btn-wrap{position:relative;display:inline-block;margin:12px 0}

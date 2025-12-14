@@ -29,23 +29,20 @@
     /* area crop */
     #cropArea{display:none;text-align:center;margin:12px 0}
     #cropImg{max-width:100%;max-height:60vh}
-    /* log debug (rimuovibile) */
-    #log{position:fixed;top:4px;left:4px;right:4px;background:#000a;color:#0f0;font:10px/1.2 mono;max-height:80px;overflow:auto;z-index:9999}
   </style>
 </head>
 
 <body>
-<!-- DEBUG LOG -->
-<div id="log"></div>
-
 <header>
   <h1>🗞 Crea il tuo giornalino</h1>
   <button id="btnExport">Esporta & invia su WhatsApp</button>
 </header>
 
-<!-- CONTROLLI IMMAGINE -->
-<input type="file" id="imgInput" accept="image/*" style="display:none">
-<button type="button" id="btnChoose">📷 Scegli / Riprova</button>
+<!-- CONTROLLI IMMAGINE (trick input-file sopra bottone) -->
+<div class="btn-wrap">
+  <button type="button" id="fakeBtn" style="pointer-events:none">📷 Scegli foto</button>
+  <input type="file" id="imgInput" accept="image/*" class="file-btn">
+</div>
 <button type="button" id="btnDelImg">🗑 Rimuovi</button>
 
 <!-- AREA CROP -->
