@@ -1,0 +1,33 @@
+:root{
+  --w:1080px;          /* larghezza “WhatsApp” */
+  --h:1080px;
+  --gap:12px;
+  font-family: system-ui, sans-serif;
+}
+body{margin:0;background:#111;color:#fff}
+header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px}
+button{padding:10px 20px;background:#25d366;color:#fff;border:none;border-radius:4px;cursor:pointer}
+
+/* EDITOR = anteprima esatta 1:1 */
+.canvas{
+  width:var(--w);
+  height:var(--h);
+  margin:20px auto;
+  background:#fff;
+  color:#000;
+  position:relative;
+  box-shadow:0 0 20px rgba(0,0,0,.5);
+  overflow:hidden;
+}
+.grid{padding:var(--gap);display:flex;flex-direction:column;gap:var(--gap);height:100%}
+
+/* BLOCCHI DRAGGABILI */
+.blocco{
+  border:2px dashed transparent;
+  transition:border .2s;
+  position:relative;
+}
+.blocco:hover{border-color:#25d366}
+.titolo{font-size:48px;font-weight:700;text-align:center}
+.testo {font-size:24px}
+.immagine{width:100%;object-fit:cover;border-radius:6px}
