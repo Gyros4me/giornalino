@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <!-- Sfondo verde WhatsApp -->
+  <rect width="192" height="192" fill="#25d366" rx="40"/>
+  
+  <!-- Giornale stilizzato -->
+  <g transform="translate(96, 96)">
+    <!-- Foglio principale -->
+    <rect x="-50" y="-60" width="100" height="120" fill="white" rx="4" stroke="#333" stroke-width="3"/>
+    
+    <!-- Titolone -->
+    <rect x="-42" y="-50" width="84" height="15" fill="#ff6b35" rx="2"/>
+    
+    <!-- Righe testo -->
+    <line x1="-42" y1="-25" x2="42" y2="-25" stroke="#666" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-42" y1="-15" x2="42" y2="-15" stroke="#666" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-42" y1="-5" x2="28" y2="-5" stroke="#666" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Immagine -->
+    <rect x="-42" y="8" width="40" height="35" fill="#4a90e2" rx="2" stroke="#333" stroke-width="2"/>
+    <circle cx="-32" cy="18" r="5" fill="#ffe066"/>
+    <path d="M-42,38 Q-32,28 -22,33 L-22,43 L-42,43 Z" fill="#66bb6a"/>
+    
+    <!-- Colonne testo destra -->
+    <line x1="5" y1="10" x2="42" y2="10" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="18" x2="42" y2="18" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="26" x2="38" y2="26" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="34" x2="42" y2="34" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    <line x1="5" y1="42" x2="35" y2="42" stroke="#666" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Stella "scoop" -->
+    <path d="M35,-55 L38,-48 L46,-47 L40,-41 L42,-33 L35,-37 L28,-33 L30,-41 L24,-47 L32,-48 Z" fill="#ffd700" stroke="#ff9800" stroke-width="1.5"/>
+  </g>
+  
+  <!-- Badge "NEWS" -->
+  <circle cx="155" cy="37" r="25" fill="#ff3d00"/>
+  <text x="155" y="44" font-family="Arial Black, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">NEWS</text>
+</svg>

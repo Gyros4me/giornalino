@@ -5,7 +5,7 @@
   <title>Giornalino WhatsApp</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <!-- PWA base -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#25d366">
 
@@ -13,27 +13,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Giornalino">
-  <link rel="apple-touch-icon" href="icons/apple-touch-icon-180.png">
-  <link rel="apple-touch-icon" sizes="192x192" href="icons/192.png">
-
-  <!-- Cropper.js -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.css" integrity="sha512-adaa0xQQfpoHmHzaCxuXjD6xUb0bOSVl5mYkCgrdLDQ4xGDfG8wH6Cd6j0cA0LK8eAZY5kG4uzlwdwK5g5l5g5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.0/cropper.min.js" integrity="sha512-adaa0xQQfpoHmHzaCxuXjD6xUb0bOSVl5mYkCgrdLDQ4xGDfG8wH6Cd6j0cA0LK8eAZY5kG4uzlwdwK5g5l5g5l5g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="apple-touch-icon" href="icons/192.png">
 
   <link rel="stylesheet" href="css/style.css">
-  <script src="js/html2canvas.min.js"></script>
-  <style>
-    /* mini-banner iOS */
-    .ios-banner{position:fixed;bottom:0;left:0;right:0;background:#25d366;color:#fff;text-align:center;padding:12px;font-size:15px;z-index:999}
-    .ios-banner button{margin-left:12px;padding:4px 12px;border:none;border-radius:4px;background:#fff;color:#25d366;font-weight:600}
-    /* area crop */
-    #cropArea{position:relative;display:none;text-align:center;margin:12px 0;min-height:220px;background:#f5f5f5}
-    #cropImg{width:320px;height:240px;max-width:100%;height:auto;display:block;margin:0 auto}
-    /* log debug */
-    #log{position:fixed;top:4px;left:4px;right:4px;background:#000a;color:#0f0;font:10px/1.2 mono;max-height:70px;overflow:auto;z-index:9999}
-    /* bottone emergenza */
-    #btnSkipCrop{display:none;margin-left:8px;background:#ff9800;color:#fff}
-  </style>
 </head>
 
 <body>
@@ -45,44 +27,80 @@
   <button id="btnExport">Esporta & invia su WhatsApp</button>
 </header>
 
-<!-- CONTROLLI IMMAGINE (trick input-file sopra bottone) -->
-<div class="btn-wrap">
-  <button type="button" id="fakeBtn" style="pointer-events:none">📷 Scegli foto</button>
-  <input type="file" id="imgInput" accept="image/*" class="file-btn">
+<div style="padding: 0 16px;">
+  <div class="btn-wrap">
+    <button type="button" id="fakeBtn">📷 Scegli foto</button>
+    <input type="file" id="imgInput" accept="image/*" class="file-btn">
+  </div>
+  <button type="button" id="btnDelImg">🗑 Rimuovi</button>
 </div>
-<button type="button" id="btnDelImg">🗑 Rimuovi</button>
 
-<!-- AREA CROP con hint -->
-<div id="cropArea" style="display:none;text-align:center;margin:12px 0;min-height:220px;background:#f5f5f5">
-  <div id="cropHint" style="margin:8px;font-size:15px;color:#448aff">👉 Sposta o ingrandisci il riquadro bianco</div>
-  <img id="cropImg" src="" alt="" style="width:320px;height:240px;max-width:100%;height:auto;display:block;margin:0 auto">
-  <br>
-  <button id="btnCropOK" type="button" disabled>✅ OK</button>
-  <button id="btnSkipCrop" type="button">Salva senza ritaglio</button>
-  <button id="btnCropCancel" type="button">❌ Annulla</button>
+<!-- CROP AREA -->
+<div id="cropArea">
+  <div id="cropContainer">
+    <div id="cropHint">👉 Usa due dita per zoom, trascina per spostare</div>
+    
+    <div id="cropCanvasWrapper">
+      <canvas id="cropCanvas"></canvas>
+    </div>
+    
+    <div class="crop-controls">
+      <h3>📐 Formato</h3>
+      <div class="preset-buttons">
+        <button class="preset-btn active" data-ratio="1">Quadrato</button>
+        <button class="preset-btn" data-ratio="1.778">16:9</button>
+        <button class="preset-btn" data-ratio="1.333">4:3</button>
+        <button class="preset-btn" data-ratio="0.75">Verticale</button>
+      </div>
+      
+      <h3>🔍 Zoom</h3>
+      <div class="zoom-control">
+        <input type="range" id="zoomSlider" min="100" max="300" value="100" step="1">
+        <div style="text-align: center; font-size: 12px; margin-top: 5px;">
+          <span id="zoomValue">100%</span>
+        </div>
+      </div>
+      
+      <h3>↔️ Sposta</h3>
+      <div class="pan-buttons">
+        <button class="pan-btn" data-dir="up">⬆️</button>
+        <button class="pan-btn" data-dir="left">⬅️</button>
+        <button class="pan-btn" data-dir="right">➡️</button>
+        <button class="pan-btn" data-dir="down">⬇️</button>
+      </div>
+    </div>
+    
+    <div class="crop-actions">
+      <button id="btnCropOK">✅ Conferma</button>
+      <button id="btnSkipCrop">💾 Usa originale</button>
+      <button id="btnCropCancel">❌ Annulla</button>
+    </div>
+  </div>
 </div>
 
 <main id="editor" class="canvas">
   <div class="grid">
     <div class="blocco titolo" contenteditable="true">Titolo del giornalino</div>
-    <div class="blocco testo"  contenteditable="true">Scrivi qui la notizia…</div>
-    <img class="blocco immagine" src="img/default.jpg" alt="Foto">
+    <div class="blocco testo" contenteditable="true">Scrivi qui la notizia…</div>
+    <img class="blocco immagine" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect fill='%23ddd' width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23999' font-size='20'%3EImmagine predefinita%3C/text%3E%3C/svg%3E" alt="Foto">
   </div>
 </main>
 
-<!-- istruzioni iOS -->
 <div id="iosHelp" class="ios-banner" style="display:none">
   Per installare: Safari → Condividi → Aggiungi a Home
   <button onclick="this.parentElement.style.display='none'">OK</button>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="js/app.js"></script>
+
 <script>
-// mostra banner solo su iOS non-installato
-if(/iPad|iPhone|iPod/.test(navigator.userAgent) &&
-   !window.matchMedia('(display-mode: standalone)').matches){
-  document.getElementById('iosHelp').style.display='block';
+// Mostra banner iOS solo se non installato
+if (/iPad|iPhone|iPod/.test(navigator.userAgent) && 
+    !window.matchMedia('(display-mode: standalone)').matches) {
+  document.getElementById('iosHelp').style.display = 'block';
 }
 </script>
+
 </body>
 </html>
